@@ -1,7 +1,6 @@
 file_sync.config.json
 SyncLogFile.html
 node_modules
-.gitignore
 .bowerrc
 .editorconfig
 .jshintrc
