@@ -9,7 +9,7 @@ var snsync = require('sn-sync');
 var filesyncservice = angular.module('filesyncservice', []);
 filesyncservice.factory("fileServe",['$resource',function($resource){
 	var configFile = config.retrieveConfig();
-	//var monitorObject = startMonitors();
+	var monitorObject = startMonitors();
 	
 	function decodedCredentials(auth){
 		var credentials = new Buffer(auth, 'base64').toString();
@@ -202,9 +202,12 @@ filesyncservice.factory("fileServe",['$resource',function($resource){
 					sync_logger.logFailure(err);
 				}
 			}
-			/*sync_logger.logTitle("responseData " + JSON.stringify(responseData));
-			sync_logger.logTitle("instance " + JSON.stringify(instance));
-			sync_logger.logTitle("table " + JSON.stringify(table));*/
+		},
+		getLogs : function(){
+			return sync_logger.getLog();
+		},
+		stopMonitors : function(){
+			stopMonitors();
 		}
 	};
 }]);

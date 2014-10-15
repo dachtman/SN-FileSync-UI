@@ -2,8 +2,8 @@ var filesyncutilControllers = angular.module('filesyncutilControllers', []);
 
 filesyncutilControllers.controller("GeneralCtrl",['$scope','$window','$interval', 'fileServe', '$sce',function($scope,$window,$interval,fileServe,$sce,$http){
 	$interval(function(){
-		$scope.console_output = $window.sync_logger.getLog();
-	},10);
+		$scope.console_output = fileServe.getLogs()
+	},1000);
 	$scope.renderHtml = function(){
 	    return $sce.trustAsHtml($scope.console_output);
 	};
@@ -56,7 +56,7 @@ filesyncutilControllers.controller("InstanceCtrl", ['$scope','$modal','fileServe
 			}
 		);
 	};
-	$scope.syncFiles = function(instance){
+	$scope.syncFiles = function(index,instance){
 		var instanceObject = {
 			instance:instance,
 			encoded_query: "sys_updated_on>" + fileServe.formatDateTime(instance.last_synced, "YYYY-MM-DD HH:mm:ss")
@@ -83,6 +83,12 @@ filesyncutilControllers.controller("InstanceCtrl", ['$scope','$modal','fileServe
 						}
 					}
 				});
+				progressModal.result.then(
+					function(){
+						instance.last_synced = "updated";
+						$scope.updateInstance(index,instance);	
+					}
+				)
 			}
 		);
 	}
@@ -268,6 +274,7 @@ filesyncutilControllers.controller("SyncInstanceModal",['$scope','$modalInstance
 	$scope.syncObject = syncObject;
 	$scope.syncObject.errors = [];
 	$scope.ok = function(){
+		fileServe.stopMonitors();
 		var instance = $scope.syncObject.instance;
 		$scope.syncObject.tables = fileServe.objectToArray("tables").map(function(table){
 			var currentUrl = instance.host + "/" + table.table + ".do";
@@ -355,6 +362,6 @@ filesyncutilControllers.controller("ProgressSyncModal",['$scope','$modalInstance
 		});
 	}
 	$scope.ok = function(){
-		$modalInstance.close();
+		$modalInstance.close(instance);
 	}
 }]);
