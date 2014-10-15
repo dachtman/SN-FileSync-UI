@@ -1,0 +1,19 @@
+<div class="modal-header">
+	<h4 class="modal-title">{{progressObject.instance.name}}</h4>
+	<h5>Encoded Query: {{progressObject.encoded_query}}</h5>
+</div>
+<div class="modal-body" >
+	<div ng-repeat="table in tables" ng-if="table.record_ids.length!=table.record_count">
+		<h5>{{table.name}}</h5>
+		<h6>{{table.current_file}}</h6>
+		<progressbar class="progress-striped" animate="true" value="(table.record_count/table.record_ids.length)*100" type="success">{{table.record_count}}/{{table.record_ids.length}}</progressbar>
+	</div>
+	<h4 ng-if="errors.length!=0">Errors</h4>
+	<div ng-if="errors.length!=0" ng-repeat="error in errors">
+		<span class="badge alert-danger">{{error.table}} - {{error.record_id}}</span>
+	</div>
+	<h3 ng-if="hide_button()">All Data Synced</h3>
+</div>
+<div class="modal-footer">
+	<button ng-if="hide_button()" type="button" class="btn btn-primary" ng-click="ok()">Ok</button>
+</div>

@@ -4,11 +4,12 @@ var Monitor = require("monitor");
 var fs = require("graceful-fs");
 var sync_logger = require("sync-logger");
 var path = require('path');
+var snsync = require('sn-sync');
 
 var filesyncservice = angular.module('filesyncservice', []);
-filesyncservice.factory("fileServe",function(){
+filesyncservice.factory("fileServe",['$resource',function($resource){
 	var configFile = config.retrieveConfig();
-	var monitorObject = startMonitors();
+	//var monitorObject = startMonitors();
 	
 	function decodedCredentials(auth){
 		var credentials = new Buffer(auth, 'base64').toString();
@@ -60,9 +61,10 @@ filesyncservice.factory("fileServe",function(){
 					var decodedCreds = decodedCredentials(currentObject.auth);
 					tempObject.username = decodedCreds.username;
 					tempObject.password = decodedCreds.password;
+					tempObject.auth = currentObject.auth;
 					break;
 				case "last_synced":
-					tempObject.last_synced = moment(currentObject.last_synced).format("YYYY-MM-DDThh:mm:ss");
+					tempObject.last_synced = moment(currentObject.last_synced).format("YYYY-MM-DDTHH:mm:ss");
 					break;
 				case "fields":
 					tempObject.fields = [];
@@ -172,6 +174,37 @@ filesyncservice.factory("fileServe",function(){
 		removeTableConfig : function (currentName){
 			config.removeTableFolder(currentName);
 			configFile = config.retrieveConfig();
+		},
+		formatDateTime : function(dateTime, dateFormat){
+			if(dateFormat){
+				return moment(dateTime).format(dateFormat);	
+			}
+			return moment(dateTime).format("YYYY-MM-DDTHH:mm:ss")
+		},
+		saveRecord : function(responseData, table, instance){
+			var currentPath = path.join(instance.path,table.name);
+			var currentFileName = responseData[table.key].replace(/\//g,"___");
+			for(var i = 0; i != table.fields.length; i++){
+				var currentField = table.fields[i];
+				if(!fs.existsSync(instance.path)){
+					fs.mkdirSync(instance.path);
+				}
+				if(!fs.existsSync(currentPath)){
+					fs.mkdirSync(currentPath);	
+				}
+				try{
+					fs.writeFileSync(
+						path.join(currentPath, currentFileName + "." + currentField.field_type),
+						responseData[currentField.field_name]
+					);
+				}
+				catch(err){
+					sync_logger.logFailure(err);
+				}
+			}
+			/*sync_logger.logTitle("responseData " + JSON.stringify(responseData));
+			sync_logger.logTitle("instance " + JSON.stringify(instance));
+			sync_logger.logTitle("table " + JSON.stringify(table));*/
 		}
 	};
-});
+}]);
