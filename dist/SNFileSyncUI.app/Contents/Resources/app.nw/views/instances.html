@@ -15,148 +15,69 @@
 					<div>{{instance.name}}</div>
 				</accordion-heading>
 				<form class="form-horizontal" role="form">
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="folder_location">Folder Location</label>
-							<div class="col-sm-10">
-								<div class="input-group">
-									<span class="input-group-btn">
-										<button class="btn btn-default" type="button">...</button>
-									</span>
-									<input id="folder_location" type="text" class="form-control" ng-model="instance.path"/>
-								</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="folder_location">Folder Location</label>
+						<div class="col-sm-10">
+							<div class="input-group">
+								<span class="input-group-btn">
+									<button class="btn btn-default" type="button">...</button>
+								</span>
+								<input id="folder_location" type="text" class="form-control" ng-model="instance.path"/>
 							</div>
 						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="url">URL</label>
-							<div class="col-sm-10">
-								<input id="url" type="url" class="form-control" ng-model="instance.host" />
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="url">URL</label>
+						<div class="col-sm-10">
+							<input id="url" type="url" class="form-control" ng-model="instance.host" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="username">Username</label>
+						<div class="col-sm-10">
+							<input id="username" type="test" class="form-control" ng-model="instance.username" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="password">Password</label>
+						<div class="col-sm-10">
+							<input id="password" type="password" class="form-control" ng-model="instance.password" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="last_synced">Last Synced</label>
+						<div class="col-sm-10">
+							<input id="last_synced" type="datetime-local" class="form-control" ng-model="instance.last_synced" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="json_ver">JSON version</label>
+						<div class="col-sm-10">
+							<select class="form-control" ng-model="instance.json">
+								<option value="JSONv2">JSONv2</option>
+								<option value="JSON">JSON</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+								<label>
+									<input ng-model="instance.read_only" type="checkbox" ng-true-value="true" ng-false-value="false" id="ready_only"> Read Only
+								</label>
 							</div>
 						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="username">Username</label>
-							<div class="col-sm-10">
-								<input id="username" type="test" class="form-control" ng-model="instance.username" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="password">Password</label>
-							<div class="col-sm-10">
-								<input id="password" type="password" class="form-control" ng-model="instance.password" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="last_synced">Last Synced</label>
-							<div class="col-sm-10">
-								<input id="last_synced" type="datetime-local" class="form-control" ng-model="instance.last_synced" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="json_ver">JSON version</label>
-							<div class="col-sm-10">
-								<select class="form-control" ng-model="instance.json">
-									<option value="JSONv2">JSONv2</option>
-									<option value="JSON">JSON</option>
-								</select>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-sm-offset-2 col-sm-10">
-								<div class="checkbox">
-									<label>
-										<input ng-model="instance.read_only" type="checkbox" ng-true-value="true" ng-false-value="false" id="ready_only"> Read Only
-									</label>
-								</div>
-							</div>
-						</div>
+					</div>
 				</form>
 				<div>
 					<button type="button" class="btn btn-success btn-xs" ng-click="updateInstance($index,instance)">
 						<span class="glyphicon glyphicon-floppy-saved"></span> 
 					</button>
-					<button type="button" class="btn btn-primary btn-xs" >
+					<button type="button" class="btn btn-primary btn-xs" ng-click="syncFiles(instance)">
 						<span class="glyphicon glyphicon-download-alt"></span> 
 					</button>
 				</div>
 			</accordion-group>
 		</accordion>
-		<!-- <div ng-repeat="instance in instances" class="panel panel-default">
-			<div class="panel-heading">
-				<h4 class="panel-title">
-					<button type="button" class="btn btn-danger btn-xs" ng-click="openDelete(instance.name,$index)">
-						<span class="glyphicon glyphicon-trash"></span> 
-					</button>
-					<a data-toggle="collapse" data-parent="#accordion_instances" data-target="#{{instance.name}}" href="#instances">
-					{{instance.name}}
-					</a>
-				</h4>
-			</div>
-			<div id="{{instance.name}}" class="panel-collapse collapse">
-				<div class="panel-body">
-					<form class="form-horizontal" role="form">
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="folder_location">Folder Location</label>
-							<div class="col-sm-10">
-								<div class="input-group">
-									<span class="input-group-btn">
-										<button class="btn btn-default" type="button">...</button>
-									</span>
-									<input id="folder_location" type="text" class="form-control" ng-model="instance.path"/>
-								</div>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="url">URL</label>
-							<div class="col-sm-10">
-								<input id="url" type="url" class="form-control" ng-model="instance.host" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="username">Username</label>
-							<div class="col-sm-10">
-								<input id="username" type="test" class="form-control" ng-model="instance.username" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="password">Password</label>
-							<div class="col-sm-10">
-								<input id="password" type="password" class="form-control" ng-model="instance.password" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="last_synced">Last Synced</label>
-							<div class="col-sm-10">
-								<input id="last_synced" type="datetime-local" class="form-control" ng-model="instance.last_synced" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="json_ver">JSON version</label>
-							<div class="col-sm-10">
-								<select class="form-control" ng-model="instance.json">
-									<option value="JSONv2">JSONv2</option>
-									<option value="JSON">JSON</option>
-								</select>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-sm-offset-2 col-sm-10">
-								<div class="checkbox">
-									<label>
-										<input ng-model="instance.read_only" type="checkbox" ng-true-value="true" ng-false-value="false" id="ready_only"> Read Only
-									</label>
-								</div>
-							</div>
-						</div>
-					</form>
-				</div>
-				<div class="panel-footer">
-					<button type="button" class="btn btn-success btn-xs" ng-click="updateInstance($index,instance)">
-						<span class="glyphicon glyphicon-floppy-saved"></span> 
-					</button>
-					<button type="button" class="btn btn-primary btn-xs" >
-						<span class="glyphicon glyphicon-download-alt"></span> 
-					</button>
-				</div>
-			</div>
-		</div> -->
 	</div>
 </div>

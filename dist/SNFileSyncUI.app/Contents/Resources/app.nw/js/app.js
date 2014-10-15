@@ -1,4 +1,4 @@
-var filesyncutilApp = angular.module('filesyncutilApp', ["ngRoute",'ui.bootstrap',"filesyncutilControllers","filesyncservice"]);
+var filesyncutilApp = angular.module('filesyncutilApp', ["ngRoute",'ui.bootstrap','ngResource',"filesyncutilControllers","filesyncservice"]);
 
 filesyncutilApp.config(["$routeProvider",
 	function($routeProvider){
