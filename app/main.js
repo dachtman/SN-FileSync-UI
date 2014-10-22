@@ -20,6 +20,6 @@ createWindowMenu();
 $("#settingsTabs a").click(function (e) {
 	$(this).tab("show");
 });
-
+//
 //TODO
 //ClARIFY READ ONLY

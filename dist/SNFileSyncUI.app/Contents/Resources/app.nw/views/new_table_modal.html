@@ -1,0 +1,53 @@
+<div class="modal-header">
+	<button typepe="button" class="close" ng-click="cancel()">
+		<span aria-hidden="true">&times;</span>
+		<span class="sr-only">Close</span>
+	</button>
+	<h4 class="modal-title">Add A New Folder</h4>
+</div>
+<div class="modal-body">
+	<form class="form-horizontal" role="form">
+		<div class="form-group" ng-repeat="table_field in table_fields" ng-if="table_field.show">
+			<label class="col-sm-2 control-label"for="{{table_field.id}}">{{table_field.label}}</label>
+			<div class="col-sm-10">
+				<input id="{{table_field.id}}" type="{{table_field.type}}" ng-model="newTable[table_field.id]" ng-init="" class="form-control"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<table class="table" style="width:50%;margin-left:170px">
+				<tr>
+					<th> 
+					</th>
+					<th>
+						<label for="field_name">Field</label>
+					</th>
+					<th>
+						<label for="field_type">File Type</label>
+					</th>
+					<th>
+						<button type="button" class="btn btn-success btn-xs" ng-click="addNewTableFieldRow()">
+							<span class="glyphicon glyphicon-plus"></span> 
+						</button>
+					</th>
+				</tr>
+				<tr ng-repeat="field in newTable.fields">
+					<td>
+						<button type="button" class="btn btn-danger btn-xs" ng-click="removeNewTableFieldRow($index)">
+							<span class="glyphicon glyphicon-remove"></span> 
+						</button>
+					</td>
+					<td>
+						<input id="field_name" type="text" ng-model="field.field_name" class="form-control" ng-init=""/>
+					</td>
+					<td>
+						<input id="field_type" type="text" ng-model="field.field_type" class="form-control" ng-init=""/>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+	<button type="button" class="btn btn-primary" ng-click="ok()">Save changes</button>
+</div>

@@ -1,0 +1,18 @@
+<div class="modal-header">
+	<h4 class="modal-title">Encoded Query</h4>
+</div>
+<div class="modal-body" >
+	<form class="form-vertical" role="form">
+		<h4>{{syncObject.instance.name}}</h4>
+		<div class="form-group">
+			<label class="control-label" for="instance_name">Encoded Query</label>
+			<div class="">
+				<input id="instance_name" type="test" class="form-control" ng-model="syncObject.encoded_query" />
+			</div>
+		</div>
+	</form>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+	<button type="button" class="btn btn-primary" ng-click="ok()">Ok</button>
+</div>

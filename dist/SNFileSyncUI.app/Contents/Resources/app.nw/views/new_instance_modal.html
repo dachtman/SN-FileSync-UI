@@ -1,0 +1,46 @@
+<div class="modal-header">
+	<button typepe="button" class="close" ng-click="cancel()">
+		<span aria-hidden="true">&times;</span>
+		<span class="sr-only">Close</span>
+	</button>
+	<h4 class="modal-title">Add A New Instance</h4>
+</div>
+<div class="modal-body">
+	<form class="form-horizontal" role="form" id="instance_form">
+		<div class="form-group">
+			<label class="col-sm-2 control-label" for="path">Folder Path</label>
+			<div class="col-sm-10">
+				<input id="shown_path" nwdirectory type="file" class="form-control" onChange="$('#path').val($(this).val()).trigger('input');" ng-init=""/>
+			</div>
+		</div>
+		<input type="text" id="path" ng-model="newInstance.path" style="display:none" ng-init=""/>
+		<div class="form-group" ng-repeat="instance_field in instance_fields" ng-if="instance_field.show">
+			<label class="col-sm-2 control-label" for="{{instance_field.id}}">{{instance_field.label}}</label>
+			<div class="col-sm-10">
+				<input id="{{instance_field.id}}" ng-model="newInstance[instance_field.id]" ng-attr-type="{{instance_field.type}}" class="form-control" ng-init=""/>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label" for="json">JSON version</label>
+			<div class="col-sm-10">
+				<select class="form-control" id="json" ng-model="newInstance.json">
+					<option value="JSONv2">JSONv2</option>
+					<option value="JSON">JSON</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" id="read_only" ng-model="newInstance.read_only"> Read Only
+					</label>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+	<button type="button" class="btn btn-primary" ng-click="ok();">Save changes</button>
+</div>
