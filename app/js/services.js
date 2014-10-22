@@ -1,23 +1,24 @@
-var config = require("configurator");
-var moment = require("moment");
-var Monitor = require("monitor");
-var fs = require("graceful-fs");
-var sync_logger = require("sync-logger");
+'use strict';
+var config = require('configurator');
+var moment = require('moment');
+var Monitor = require('monitor');
+var fs = require('graceful-fs');
+var sync_logger = require('sync-logger');
 var path = require('path');
-var snsync = require('sn-sync');
+//var snsync = require('sn-sync');
 
 var filesyncservice = angular.module('filesyncservice', []);
-filesyncservice.factory("fileServe",['$resource',function($resource){
+filesyncservice.factory('fileServe',[function(){
 	var configFile = config.retrieveConfig();
 	var monitorObject;// = {}//startMonitors();
 	
 	function decodedCredentials(auth){
 		var credentials = new Buffer(auth, 'base64').toString();
-		credentialsArray = credentials.split(":");
+		var credentialsArray = credentials.split(':');
 		return {
 			username : credentialsArray[0],
 			password : credentialsArray[1]
-		}
+		};
 	}
 
 	function startMonitors(){
@@ -25,11 +26,11 @@ filesyncservice.factory("fileServe",['$resource',function($resource){
 		var iterationObject = configFile.instances;
 		for(var key in iterationObject){
 			var currentInstance = configFile.instances[key];
-			if(currentInstance.read_only.toString() == 'false'){
+			if(currentInstance.read_only.toString() === 'false'){
 				returnObject[currentInstance.name] = {
 					monitor:new Monitor(currentInstance.path),
 					path:currentInstance.path
-				}
+				};
 			}
 		}
 		return returnObject;
@@ -57,23 +58,24 @@ filesyncservice.factory("fileServe",['$resource',function($resource){
 		var tempObject = {};
 		for(var key in currentObject){
 			switch(key){
-				case "auth":
+				case 'auth':
 					var decodedCreds = decodedCredentials(currentObject.auth);
 					tempObject.username = decodedCreds.username;
 					tempObject.password = decodedCreds.password;
 					tempObject.auth = currentObject.auth;
 					break;
-				case "last_synced":
-					tempObject.last_synced = moment(currentObject.last_synced).format("YYYY-MM-DDTHH:mm:ss");
+				case 'last_synced':
+					tempObject.last_synced = moment(currentObject.last_synced).format('YYYY-MM-DDTHH:mm:ss');
 					break;
-				case "fields":
+				case 'fields':
 					tempObject.fields = [];
-					for(var key in currentObject.fields){
+					for(var currentKey in currentObject.fields){
 						tempObject.fields.push({
-							field_name:key,
-							field_type:currentObject.fields[key],
+							field_name:currentKey,
+							field_type:currentObject.fields[currentKey],
 						});
 					}
+					break;
 				default:
 					tempObject[key] = currentObject[key];
 					break;
@@ -92,7 +94,7 @@ filesyncservice.factory("fileServe",['$resource',function($resource){
 		objectToArray : function(objectName){
 			var returnArray = [];
 			var currentObject = configFile[objectName];
-			if(JSON.stringify(currentObject) != "{}"){
+			if(JSON.stringify(currentObject) !== '{}'){
 				var currentArray = Object.keys(currentObject).sort().reverse();
 				for(var i = currentArray.length - 1; i >= 0; i--){
 					var tempObject = createNewObject( currentObject[currentArray[i]] );
@@ -102,7 +104,7 @@ filesyncservice.factory("fileServe",['$resource',function($resource){
 			return returnArray;
 		},
 		createInstance : function(instanceObject){
-			var instanceName = path.basename(instanceObject.path)
+			var instanceName = path.basename(instanceObject.path);
 			config.createInstance(
 				instanceObject.path,
 				instanceObject.host,
@@ -141,7 +143,7 @@ filesyncservice.factory("fileServe",['$resource',function($resource){
 			for(var i = tableObject.fields.length - 1; i >= 0; i--){
 				currentFields[tableObject.fields[i].field_name] = tableObject.fields[i].field_type;
 			}
-			currentFields = tableObject.fields.length == 0 ? {"script":"js"} : currentFields;
+			currentFields = tableObject.fields.length === 0 ? {'script':'js'} : currentFields;
 			config.createTable(
 				tableObject.name,
 				tableObject.table,
@@ -156,7 +158,7 @@ filesyncservice.factory("fileServe",['$resource',function($resource){
 			for(var i = tableObject.fields.length - 1; i >= 0; i--){
 				currentFields[tableObject.fields[i].field_name] = tableObject.fields[i].field_type;
 			}
-			currentFields = tableObject.fields.length == 0 ? {"script":"js"} : currentFields;
+			currentFields = tableObject.fields.length === 0 ? {'script':'js'} : currentFields;
 			config.createTable(
 				tableObject.name,
 				tableObject.table,
@@ -179,12 +181,12 @@ filesyncservice.factory("fileServe",['$resource',function($resource){
 			if(dateFormat){
 				return moment(dateTime).format(dateFormat);	
 			}
-			return moment(dateTime).format("YYYY-MM-DDTHH:mm:ss")
+			return moment(dateTime).format('YYYY-MM-DDTHH:mm:ss');
 		},
 		saveRecord : function(responseData, table, instance){
 			var currentPath = path.join(instance.path,table.name);
-			var currentFileName = responseData[table.key].replace(/\//g,"___");
-			for(var i = 0; i != table.fields.length; i++){
+			var currentFileName = responseData[table.key].replace(/\//g,'___');
+			for(var i = 0; i !== table.fields.length; i++){
 				var currentField = table.fields[i];
 				if(!fs.existsSync(instance.path)){
 					fs.mkdirSync(instance.path);
@@ -194,7 +196,7 @@ filesyncservice.factory("fileServe",['$resource',function($resource){
 				}
 				try{
 					fs.writeFileSync(
-						path.join(currentPath, currentFileName + "." + currentField.field_type),
+						path.join(currentPath, currentFileName + '.' + currentField.field_type),
 						responseData[currentField.field_name]
 					);
 				}
