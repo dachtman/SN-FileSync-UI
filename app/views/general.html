@@ -1,6 +1,9 @@
 <div class="tab-pane active" id="general">
 	<div class="page-header">
 		<h2>GENERAL</h2>
+    		<button type="button" class="btn btn-danger" ng-model="watcher" btn-checkbox btn-checkbox-true="true" btn-checkbox-false="false" ng-class="{true:'btn-danger',false:'btn-success'}[watcher]" ng-click="watcherToggle()">
+        		{{watcherDisplay()}}
+    		</button>
 	</div>
 	<div class="panel-group well well-lg" style="height:400px;overflow-y:auto">
 		<div id="output_panel" class="panel-body" ng-bind-html="renderHtml()">

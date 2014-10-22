@@ -78,6 +78,7 @@ module.exports = function (grunt) {
       },
       copyWinToTmp: {
         files: [{
+          filter:"file_sync.config.json",
           expand: true,
           cwd: '<%= config.resources %>/node-webkit/Windows/',
           dest: '<%= config.tmp %>/',
@@ -232,7 +233,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('dist-win', [
     'jshint',
-    'clean:dist',
+    /*'clean:dist',*/
     'copy:copyWinToTmp',
     'compress:appToTmp',
     'rename:zipToApp',

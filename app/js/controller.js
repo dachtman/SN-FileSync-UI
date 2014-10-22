@@ -7,6 +7,21 @@ filesyncutilControllers.controller("GeneralCtrl",['$scope','$window','$interval'
 	$scope.renderHtml = function(){
 	    return $sce.trustAsHtml($scope.console_output);
 	};
+	$scope.watcher=true;
+	$scope.watcherDisplay = function(){
+		if($scope.watcher){
+			return "Start File Watcher";
+		}else{
+			return "Stop File Watcher";
+		}
+	}
+	$scope.watcherToggle = function(){
+		if($scope.watcher){
+			fileServe.startMonitors();
+		}else{
+			fileServe.stopMonitors();
+		}
+	}
 }]);
 filesyncutilControllers.controller("InstanceCtrl", ['$scope','$modal','fileServe',function($scope,$modal,fileServe){
 	$scope.instances = fileServe.objectToArray("instances");
