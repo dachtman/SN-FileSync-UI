@@ -32,7 +32,10 @@ module.exports = function (grunt) {
       options: {
         jshintrc: '.jshintrc'
       },
-      files: '<%= config.app %>/js/*.js'
+      files: [
+        '<%= config.app %>/js/*.js',
+        '<%= config.app %>/node_modules/*.js'
+      ]
     },
     copy: {
       appLinux: {
