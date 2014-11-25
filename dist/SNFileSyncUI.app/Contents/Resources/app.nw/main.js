@@ -14,10 +14,12 @@ function createWindowMenu() {
         type: 'menubar'
     });
     if (os.platform() === 'darwin') {
-        windowMenu.createMacBuiltin('SN Sync Utility', {
-            hideEdit: false,
-            hideWindow: false
-        });
+        if(windowMenu.createMacBuiltin){
+            windowMenu.createMacBuiltin('SN Sync Utility', {
+                hideEdit: false,
+                hideWindow: false
+            });
+        }
     }
     myWindow.menu = windowMenu;
     windowMenu.append(new gui.MenuItem({
