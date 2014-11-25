@@ -9,7 +9,7 @@
 		<div ng-repeat="table in tables" class="panel panel-default">
 			<div class="panel-heading">
 				<h4 class="panel-title">
-					<button type="button" class="pull-right btn btn-danger btn-xs" ng-click="openDelete(table.name,$index)">
+					<button type="button" class="pull-right btn btn-danger btn-xs" ng-click="openDelete(table,$index)">
 						<span class="glyphicon glyphicon-trash"></span> 
 					</button>
 					<a data-toggle="collapse" data-parent="#accordion_table" data-target="#{{table.name}}" href="#tables">

@@ -2,15 +2,20 @@
 	<div class="page-header">
 		<h2>INSTANCES</h2>
 		<button type="button" class="btn btn-success btn-xs" ng-click="openInstance()">
-			<span class="glyphicon glyphicon-plus"></span> 
-		</button> Add Instance
+			<span class="glyphicon glyphicon-plus"></span>
+			Add Instance
+		</button>
+<!-- 		<button type="button" class="btn btn-primary btn-xs" ng-click="syncAllEnviroments()">
+			<span class="glyphicon glyphicon-download-alt"></span>
+			Sync All
+		</button> -->
 	</div>
 	<div class="panel-group" id="accordion_instances">
 		<accordion>
 			<accordion-group ng-repeat="instance in instances">
 				<accordion-heading>
-					<button type="button" class="pull-right btn btn-danger btn-xs" ng-click="openDelete(instance.name,$index)">
-						<div class="glyphicon glyphicon-trash"></div> 
+					<button type="button" class="pull-right btn btn-danger btn-xs" ng-click="openDelete(instance,$index)">
+						<div class="glyphicon glyphicon-trash"></div>
 					</button>
 					<div>{{instance.name}}</div>
 				</accordion-heading>
@@ -63,7 +68,7 @@
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
 								<label>
-									<input ng-model="instance.read_only" type="checkbox" ng-true-value="true" ng-false-value="false" id="ready_only"> Read Only
+									<input ng-model="instance.read_only" type="checkbox" ng-true-value="true" ng-false-value="false" id="ready_only"> Do not upload files to enviroment
 								</label>
 							</div>
 						</div>
@@ -71,10 +76,10 @@
 				</form>
 				<div>
 					<button type="button" class="btn btn-success btn-xs" ng-click="updateInstance($index,instance)">
-						<span class="glyphicon glyphicon-floppy-saved"></span> 
+						<span class="glyphicon glyphicon-floppy-saved"></span>
 					</button>
 					<button type="button" class="btn btn-primary btn-xs" ng-click="syncFiles($index,instance)">
-						<span class="glyphicon glyphicon-download-alt"></span> 
+						<span class="glyphicon glyphicon-download-alt"></span>
 					</button>
 				</div>
 			</accordion-group>

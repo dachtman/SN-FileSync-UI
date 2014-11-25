@@ -3,19 +3,17 @@
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  
-    "homepage": "https://github.com/dachtman/snfilesyncui",
-    "bugs": "https://github.com/dachtman/snfilesyncui/issues",
-    "author": {
-      "name": "",
-      "email": "",
-      "url": "https://github.com/dachtman"
-    },
-    "repository": {
-      "type": "git",
-      "url": "git://github.com/dachtman/snfilesyncui.git"
-    },
-  
+  "homepage": "https://github.com/dachtman/snfilesyncui",
+  "bugs": "https://github.com/dachtman/snfilesyncui/issues",
+  "author": {
+    "name": "",
+    "email": "",
+    "url": "https://github.com/dachtman"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dachtman/snfilesyncui.git"
+  },
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.5",
