@@ -2,3 +2,13 @@ SyncLogFile.html
 .bowerrc
 .editorconfig
 .jshintrc
+app/node_modules/async
+app/node_modules/restify
+app/node_modules/nedb
+app/node_modules/moment
+app/node_modules/graceful-fs
+app/node_modules/graceful-chokidar
+app/node_modules/diff
+app/node_modules/color
+app/node_modules/nodewebkit
+node_modules
