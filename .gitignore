@@ -12,3 +12,4 @@ app/node_modules/diff
 app/node_modules/color
 app/node_modules/nodewebkit
 node_modules
+dist
