@@ -11,5 +11,15 @@ app/node_modules/graceful-chokidar
 app/node_modules/diff
 app/node_modules/color
 app/node_modules/nodewebkit
+node_modules/concat-files
+node_modules/grunt
+node_modules/grunt-contrib-clean
+node_modules/grunt-contrib-clean
+node_modules/grunt-contrib-compress
+node_modules/grunt-contrib-concat
+node_modules/grunt-contrib-jshint
+node_modules/grunt-contrib-rename
+node_modules/load-grount-tasks
+node_modules/time-grunt
 dist
 tmp
