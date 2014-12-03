@@ -16,7 +16,7 @@
 		<div class="form-group">
 			<table class="table" style="width:50%;margin-left:170px">
 				<tr>
-					<th> 
+					<th>
 					</th>
 					<th>
 						<label for="field_name">Field</label>
@@ -25,15 +25,15 @@
 						<label for="field_type">File Type</label>
 					</th>
 					<th>
-						<button type="button" class="btn btn-success btn-xs" ng-click="addNewTableFieldRow()">
-							<span class="glyphicon glyphicon-plus"></span> 
+						<button type="button" class="btn btn-success btn-xs" ng-click="addNewTableFieldRow()" tooltip="add">
+							<span class="glyphicon glyphicon-plus"></span>
 						</button>
 					</th>
 				</tr>
 				<tr ng-repeat="field in newTable.fields">
 					<td>
-						<button type="button" class="btn btn-danger btn-xs" ng-click="removeNewTableFieldRow($index)">
-							<span class="glyphicon glyphicon-remove"></span> 
+						<button type="button" class="btn btn-danger btn-xs" ng-click="removeNewTableFieldRow($index)" tooltip="delete">
+							<span class="glyphicon glyphicon-remove"></span>
 						</button>
 					</td>
 					<td>
