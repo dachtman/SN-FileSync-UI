@@ -2,15 +2,15 @@
 	<div class="page-header">
 		<h2>TABLES</h2>
 		<button type="button" class="btn btn-success btn-xs">
-			<span class="glyphicon glyphicon-plus" ng-click="openTable()"></span> 
+			<span class="glyphicon glyphicon-plus" ng-click="openTable()"></span>
 		</button> Add Table
 	</div>
 	<div class="panel-group" id="accordion_table">
 		<div ng-repeat="table in tables" class="panel panel-default">
 			<div class="panel-heading">
 				<h4 class="panel-title">
-					<button type="button" class="pull-right btn btn-danger btn-xs" ng-click="openDelete(table,$index)">
-						<span class="glyphicon glyphicon-trash"></span> 
+					<button type="button" class="pull-right btn btn-danger btn-xs" ng-click="openDelete(table,$index)" tooltip="delete">
+						<span class="glyphicon glyphicon-trash"></span>
 					</button>
 					<a data-toggle="collapse" data-parent="#accordion_table" data-target="#{{table.name}}" href="#tables">
 					{{table.name}}
@@ -41,7 +41,7 @@
 						<div class="form-group">
 							<table class="table" style="width:50%;margin-left:170px">
 								<tr>
-									<th> 
+									<th>
 									</th>
 									<th>
 										<label for="field_name">Field</label>
@@ -50,15 +50,15 @@
 										<label for="field_type">File Type</label>
 									</th>
 									<th>
-										<button type="button" class="btn btn-success btn-xs" ng-click="addFieldRow($index);">
-											<span class="glyphicon glyphicon-plus"></span> 
+										<button type="button" class="btn btn-success btn-xs" ng-click="addFieldRow($index);" tooltip="add">
+											<span class="glyphicon glyphicon-plus"></span>
 										</button>
 									</th>
 								</tr>
 								<tr ng-repeat="field in table.fields">
 									<td>
-										<button type="button" class="btn btn-danger btn-xs" ng-click="removeFieldRow($parent.$index,$index)">
-											<span class="glyphicon glyphicon-remove"></span> 
+										<button type="button" class="btn btn-danger btn-xs" ng-click="removeFieldRow($parent.$index,$index)" tooltip="delete">
+											<span class="glyphicon glyphicon-remove"></span>
 										</button>
 									</td>
 									<td>
@@ -73,8 +73,8 @@
 					</form>
 				</div>
 				<div class="panel-footer">
-					<button type="button" class="btn btn-success btn-xs" ng-click="updateTable($index,table);">
-						<span class="glyphicon glyphicon-floppy-saved"></span> 
+					<button type="button" class="btn btn-success btn-xs" ng-click="updateTable($index,table);" tooltip="update">
+						<span class="glyphicon glyphicon-floppy-saved"></span>
 					</button>
 				</div>
 			</div>
