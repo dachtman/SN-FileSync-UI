@@ -3,7 +3,7 @@ SN-FileSync-UI
 This tool is meant to be a helper for devs working with ServiceNow. The tool will let you pull all scripts from a ServiceNow enviroment and allows you to organize and make it searchable on your desktop.
 
 If you are not interested in developing this please check out my blog.
-[Download zip files] (http://totdrg.com/?page_id=7)
+[Download zip files] (http://wp.me/P5pKFF-7)
 
 How to get it running
 =====================
