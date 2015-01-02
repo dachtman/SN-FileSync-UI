@@ -50,3 +50,12 @@ textarea{
 .file.focus .icon {
   -webkit-filter: invert(20%);
 }
+#general_group, #accordion_table, #accordion_instances{
+   position: absolute;
+   top: 200px;
+   bottom: 0px;
+   right: 10px;
+   left: 10px;
+   overflow:auto;
+}
+

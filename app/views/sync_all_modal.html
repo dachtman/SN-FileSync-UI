@@ -1,15 +1,54 @@
 <div class="modal-header">
-	<h4 class="modal-title">Encoded Query</h4>
+	<h4 class="modal-title">Choose Instances and Tables to Sync and Modify Encoded Query</h4>
 </div>
 <div class="modal-body">
-	<form class="form-vertical" role="form"  ng-repeat="syncEnviroment in syncEnviroments">
-		<h4>{{syncEnviroment.instance.name}}</h4>
+	<form class="form-vertical" role="form">
 		<div class="form-group">
-			<label class="control-label" for="instance_name">Encoded Query</label>
+			<label class="control-label" for="encoded_query">Encoded Query</label>
 			<div class="">
-				<input id="instance_name" type="test" class="form-control" ng-model="syncEnviroment.encoded_query" />
+				<input id="encoded_query" type="test" class="form-control" ng-model="encoded_query" />
 			</div>
 		</div>
+		<accordion>
+			<accordion-group is-open="instance_open">
+				<accordion-heading>
+					Instance Selection
+					<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': instance_open, 'glyphicon-chevron-right': !instance_open}"></i>
+				</accordion-heading>
+				<div class="form-group">
+					<label class="control-label" for="instance_name">Instances</label>
+					<button type="button" class="btn btn-xs" btn-checkbox btn-checkbox-true="'Select All'" btn-checkbox-false="'Unselect All'" ng-model="all_instances" ng-class="{'Unselect All':'btn-danger','Select All':'btn-success'}[all_instances]" ng-click="selectAllInstances(all_instances)">{{all_instances}}</button>
+					<div class="row">
+						<div class="col-md-4" ng-repeat="instance in instances">
+							<div class="checkbox">
+								<label>
+									<input ng-model="instance.read_only" ng-true-value="false" ng-false-value="true" type="checkbox" id="select">{{instance.name}}
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</accordion-group>
+			<accordion-group is-open="table_open">
+				<accordion-heading>
+					Table Selection
+					<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': table_open, 'glyphicon-chevron-right': !table_open}"></i>
+				</accordion-heading>
+				<div class="form-group">
+					<label class="control-label" for="instance_name">Tables</label>
+					<button type="button" class="btn btn-xs" btn-checkbox btn-checkbox-true="'Select All'" btn-checkbox-false="'Unselect All'" ng-model="all_tables" ng-class="{'Unselect All':'btn-danger','Select All':'btn-success'}[all_tables]" ng-click="selectAllTables(all_tables)">{{all_tables}}</button>
+					<div class="row">
+						<div class="col-md-4" ng-repeat="table in tables">
+							<div class="checkbox">
+								<label>
+									<input ng-model="table.select" ng-true-value="true" ng-false-value="false" type="checkbox" id="select">{{table.name}}
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</accordion-group>
+		</accordion>
 	</form>
 </div>
 <div class="modal-footer">

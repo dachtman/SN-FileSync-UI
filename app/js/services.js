@@ -8,9 +8,8 @@ var path = require('path');
 
 
 var filesyncservice = angular.module('filesyncservice', []);
-filesyncservice.factory('fileServe', [
-
-    function() {
+filesyncservice.factory('fileServe',
+    function($http) {
         var configFile = new Config();
 
         function startMonitors() {
@@ -45,6 +44,10 @@ filesyncservice.factory('fileServe', [
         }
 
         return {
+            getRequest: function(instanceUrl, queryObject, table){
+                var currentTableUrl = instanceUrl + table.table + '.do';
+                return $http.get(currentTableUrl, queryObject);
+            },
             getInstances: function() {
                 return configFile.getConfig('instances');
             },
@@ -89,6 +92,7 @@ filesyncservice.factory('fileServe', [
                     tableObject.key,
                     tableObject.fields,
                     false,
+                    false,
                     callBack
                 );
             },
@@ -98,6 +102,7 @@ filesyncservice.factory('fileServe', [
                     tableObject.table,
                     tableObject.key,
                     tableObject.fields,
+                    tableObject.select,
                     tableObject._id,
                     callBack
                 );
@@ -124,6 +129,17 @@ filesyncservice.factory('fileServe', [
                     return moment(dateTime).format('YYYY-MM-DDTHH:mm:ss');
                 } else {
                     return moment().format('YYYY-MM-DDTHH:mm:ss');
+                }
+            },
+            compareDateTime:function(dateAlpha, dateBeta){
+                if(moment(dateAlpha).isBefore(dateBeta)){
+                    return -1;
+                }
+                if(moment(dateBeta).isBefore(dateAlpha)){
+                    return 1;
+                }
+                if(moment(dateBeta).isSame(dateAlpha)){
+                    return 0;
                 }
             },
             saveRecord: function(responseData, table, instance) {
@@ -164,4 +180,4 @@ filesyncservice.factory('fileServe', [
             }
         };
     }
-]);
+);
