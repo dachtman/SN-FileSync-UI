@@ -123,7 +123,15 @@ filesyncutilControllers.controller('InstanceCtrl', ['$scope', '$modal', 'fileSer
 					syncEnviroments: function() {
 						return {
 							instances:$scope.instances,
-							tables:fileServe.getTables()
+							tables:fileServe.getTables(),
+							encoded_query: function(){
+								var returnQuery = 'sys_updated_on>';
+								var lastSyncedArray = $scope.instances.map(function(instance){
+									return instance.last_synced;
+								});
+								lastSyncedArray.sort(fileServe.compareDateTime);
+								return returnQuery + fileServe.formatDateTime(lastSyncedArray[0], 'YYYY-MM-DD HH:mm:ss');
+							}
 						};
 					}
 				}
@@ -340,9 +348,7 @@ filesyncutilControllers.controller('SyncInstanceModal', ['$scope', '$modalInstan
 		$scope.tables = fileServe.getTables();
 		$scope.syncObject.errors = [];
 		$scope.isCollapsed = false;
-		$scope.all_selected = $scope.tables.every(function(table) {
-			return table.select.toString() === 'true';
-		}) ? 'Unselect All' : 'Select All';
+		$scope.all_selected = $scope.tables.every(fileServe.filterSelectedTables) ? 'Unselect All' : 'Select All';
 		$scope.selectAll = function(all_selected) {
 			var currentSelect = all_selected != 'Unselect All';
 			$scope.tables.map(function(table) {
@@ -350,28 +356,12 @@ filesyncutilControllers.controller('SyncInstanceModal', ['$scope', '$modalInstan
 				return table;
 			});
 		};
-		$scope.ok = function() {
+		$scope.ok = function(){
 			//fileServe.stopMonitors();
-			$scope.syncObject.tables = [];
 			var instance = $scope.syncObject.instance;
-			var instanceUrl = instance.host + '/';
-			var queryObject = {
-				params: {
-					sysparm_action: 'getKeys',
-					sysparm_query: $scope.syncObject.encoded_query
-				},
-				headers: {
-					Authorization: 'Basic ' + instance.auth
-				}
-			};
-			queryObject.params[instance.json] = '';
-			var tableArray = $scope.tables.filter(function(table){
-				return table.select.toString() === 'true';
-			});
-			$scope.syncObject.tables = tableArray.map(function(table){
-				table.response = fileServe.getRequest(instanceUrl, queryObject, table);
-				return table;
-			});
+			var encodedQuery = $scope.syncObject.encoded_query;
+			var tables = $scope.tables.filter(fileServe.filterSelectedTables);
+			$scope.syncObject.tables = fileServe.getKeys(instance,tables,encodedQuery);
 			$modalInstance.close($scope.syncObject);
 		};
 		$scope.cancel = function() {
@@ -381,24 +371,14 @@ filesyncutilControllers.controller('SyncInstanceModal', ['$scope', '$modalInstan
 ]);
 filesyncutilControllers.controller('SyncAllInstanceModal', ['$scope', '$modalInstance', '$http', 'fileServe', 'syncEnviroments',
 	function($scope, $modalInstance, $http, fileServe, syncEnviroments) {
+		//$scope.syncEnviroments = syncEnviroments;
 		$scope.instances = syncEnviroments.instances;
 		$scope.tables = syncEnviroments.tables;
-		$scope.encoded_query = function(){
-			var returnQuery = 'sys_updated_on>';
-			var lastSyncedArray = $scope.instances.map(function(instance){
-				return instance.last_synced;
-			});
-			lastSyncedArray.sort(fileServe.compareDateTime);
-			return returnQuery + fileServe.formatDateTime(lastSyncedArray[0], 'YYYY-MM-DD HH:mm:ss');
-		};
+		$scope.encoded_query = syncEnviroments.encoded_query();
 		$scope.instance_open = true;
 		$scope.table_open = false;
-		$scope.all_instances = $scope.instances.every(function(instance) {
-			return instance.read_only.toString() === 'false';
-		}) ? 'Unselect All' : 'Select All';
-		$scope.all_tables = $scope.tables.every(function(table) {
-			return table.select.toString() === 'true';
-		}) ? 'Unselect All' : 'Select All';
+		$scope.all_instances = $scope.instances.every(fileServe.filterSelectedInstances) ? 'Unselect All' : 'Select All';
+		$scope.all_tables = $scope.tables.every(fileServe.filterSelectedTables) ? 'Unselect All' : 'Select All';
 		$scope.selectAllInstances = function(all_instances){
 			var currentSelect = all_instances == 'Unselect All';
 			$scope.instances.map(function(instance) {
@@ -413,7 +393,15 @@ filesyncutilControllers.controller('SyncAllInstanceModal', ['$scope', '$modalIns
 				return table;
 			});
 		};
-		$scope.ok = function() {/*
+		$scope.ok = function() {
+			var encodedQuery = $scope.encoded_query;
+			var tables = $scope.tables.filter(fileServe.filterSelectedTables);
+			var instancesObject = $scope.instances.filter(fileServe.filterSelectedInstances);
+			instancesObject.map(function(instance){
+				instance.tables = fileServe.getKeys(instance,tables,encodedQuery);
+			});
+			console.log(instancesObject);
+			/*
 			fileServe.stopMonitors();
 			$scope.syncEnviroments.map(function(instance) {
 				$scope.syncObject.tables = fileServe.getTables().map(function(table) {
@@ -456,45 +444,9 @@ filesyncutilControllers.controller('SyncAllInstanceModal', ['$scope', '$modalIns
 filesyncutilControllers.controller('ProgressSyncModal', ['$scope', '$modalInstance', '$interval', 'progressObject', 'fileServe',
 	function($scope, $modalInstance, $interval, progressObject, fileServe) {
 		$scope.progressObject = progressObject;
+		$scope.instance = progressObject.instance;
 		$scope.errors = progressObject.errors;
-		var instance = $scope.progressObject.instance;
-		var instanceUrl = instance.host + '/';
-		var queryObject = {
-			params: {
-				sysparm_sys_id: ''
-			},
-			headers: {
-				Authorization: 'Basic ' + instance.auth
-			}
-		};
-		queryObject.params[instance.json] = '';
-		$scope.tables = progressObject.tables;
-		$scope.tables = $scope.tables.map(function(table){
-			table.response.success(function(data){
-				table.record_ids = data.records;
-				table.record_count = 0;
-			});
-			return table;
-		});
-        $scope.tables.map(function(table,tableIndex){
-        	table.interval = $interval(function(){
-	        	if(table.record_ids){
-	        		$interval.cancel(table.interval);
-	        		table.record_ids.map(function(record_id){
-	        			queryObject.params.sysparm_sys_id = record_id;
-	        			var response = fileServe.getRequest(instanceUrl, queryObject, table);
-	        			response.success(function(data){
-	        				var currentRecord = data.records[0];
-	        				fileServe.saveRecord(currentRecord, table, instance);
-	        				$scope.tables[tableIndex].current_file = currentRecord.name;
-	        				$scope.tables[tableIndex].record_count++;
-	        			});
-	        			return record_id;
-	        		});
-	        	}
-        	},10);
-        	return table;
-        });
+		$scope.tables = fileServe.getData($scope.instance,progressObject.tables);
 		$scope.hide_button = function() {
 			return $scope.tables.every(function(table) {
 				if (table.record_ids) {
@@ -504,7 +456,7 @@ filesyncutilControllers.controller('ProgressSyncModal', ['$scope', '$modalInstan
 			});
 		};
 		$scope.ok = function() {
-			$modalInstance.close(instance);
+			$modalInstance.close($scope.instance);
 		};
 	}
 ]);
