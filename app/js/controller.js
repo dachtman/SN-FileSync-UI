@@ -59,7 +59,7 @@ filesyncutilControllers.controller('InstanceCtrl', ['$scope', '$modal', 'fileSer
 								return a.name.localeCompare(b.name);
 							}
 						);
-						fileServe.logSuccess(instanceObject.name + ' has been created!!!');
+						fileServe.logSuccess(newInstance.name + ' has been created!!!');
 					});
 				}
 			);
