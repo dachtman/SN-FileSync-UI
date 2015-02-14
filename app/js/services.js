@@ -5,11 +5,13 @@ var Monitor = require('monitor');
 var fs = require('graceful-fs');
 var sync_logger = require('sync-logger');
 var path = require('path');
-
-
+/*
+success(function(data, status, headers, config){});
+error(function(data, status, headers, config){});
+*/
 var filesyncservice = angular.module('filesyncservice', []);
 filesyncservice.factory('fileServe',
-    function($http) {
+    function($http,$interval) {
         var configFile = new Config();
 
         function startMonitors() {
@@ -43,16 +45,107 @@ filesyncservice.factory('fileServe',
             }
         }
 
+        function get(url, queryObject){
+            return $http.get(url, queryObject);
+        }
+
+        function saveRecord(responseData, table, instance) {
+                var currentPath = path.join(instance.path, table.name);
+                var currentFileName = responseData[table.key].replace(/\//g, '___');
+                for (var i = 0; i !== table.fields.length; i++) {
+                    var currentField = table.fields[i];
+                    if (!fs.existsSync(instance.path)) {
+                        fs.mkdirSync(instance.path);
+                    }
+                    if (!fs.existsSync(currentPath)) {
+                        fs.mkdirSync(currentPath);
+                    }
+                    try {
+                        fs.writeFileSync(
+                            path.join(currentPath, currentFileName + '.' + currentField.field_type),
+                            responseData[currentField.field_name]
+                        );
+                    } catch (err) {
+                        sync_logger.logFailure(err);
+                    }
+                }
+            }
+
         return {
-            getRequest: function(instanceUrl, queryObject, table){
-                var currentTableUrl = instanceUrl + table.table + '.do';
-                return $http.get(currentTableUrl, queryObject);
+            getKeys: function(instance, tables, encodedQuery){
+                var queryObject = {
+                    params:{
+                        sysparm_action: 'getKeys',
+                        sysparm_query: encodedQuery
+                    },
+                    headers:{
+                        Authorization: 'Basic ' + instance.auth
+                    }
+                };
+                queryObject.params[instance.json] = '';
+                return tables.map(function(table){
+                    var url = instance.host + '/' + table.table + '.do';
+                    table.response = get(url, queryObject);
+                    table.response.success(function(data, status, headers, config){
+                        console.log(data.records);
+                        table.record_ids = data.records;
+                        table.record_count = 0;
+                    });
+                    table.response.error(function(data, status, headers, config){
+                        table.record_ids = [];
+                        table.record_count = 0;
+                    });
+                    return table;
+                });
+            },
+            getData: function(instance, tables){
+                return tables.map(function(table, index){
+                    var url = instance.host + '/' + table.table + '.do';
+                    table.interval = $interval(function(){
+                        if(table.record_ids){
+                            $interval.cancel(table.interval);
+                            table.record_ids.map(function(record_id){
+                                var queryObject = {
+                                    params: {
+                                        sysparm_sys_id: record_id.toString()
+                                    },
+                                    headers:{
+                                        Authorization: 'Basic ' + instance.auth
+                                    }
+                                };
+                                queryObject.params[instance.json] = '';
+                                get(url, queryObject).then(
+                                    function(response){
+                                        if(typeof(response.data) !== 'string'){
+                                            var currentRecord = response.data.records[0];
+                                            saveRecord(currentRecord,table,instance);
+                                            table.current_file = currentRecord.name;
+                                        }
+                                        table.record_count++;
+                                    },
+                                    function(reponse){
+                                        table.current_file = "ERROR";
+                                        table.record_count++;
+                                    }
+                                );
+                                return record_id;
+                            });
+                        }
+                    },10,180000);
+                    return table;
+                });
             },
             getInstances: function() {
                 return configFile.getConfig('instances');
             },
             getTables: function() {
                 return configFile.getConfig('tables');
+            },
+            filterSelectedTables: function(table){
+                return table.select.toString() === 'true';
+            },
+            filterSelectedInstances: function(instance){
+                return instance.read_only.toString() === 'false';
             },
             createInstance: function(instanceObject, callBack) {
                 configFile.createInstance(
@@ -140,27 +233,6 @@ filesyncservice.factory('fileServe',
                 }
                 if(moment(dateBeta).isSame(dateAlpha)){
                     return 0;
-                }
-            },
-            saveRecord: function(responseData, table, instance) {
-                var currentPath = path.join(instance.path, table.name);
-                var currentFileName = responseData[table.key].replace(/\//g, '___');
-                for (var i = 0; i !== table.fields.length; i++) {
-                    var currentField = table.fields[i];
-                    if (!fs.existsSync(instance.path)) {
-                        fs.mkdirSync(instance.path);
-                    }
-                    if (!fs.existsSync(currentPath)) {
-                        fs.mkdirSync(currentPath);
-                    }
-                    try {
-                        fs.writeFileSync(
-                            path.join(currentPath, currentFileName + '.' + currentField.field_type),
-                            responseData[currentField.field_name]
-                        );
-                    } catch (err) {
-                        sync_logger.logFailure(err);
-                    }
                 }
             },
             logSuccess: function(message) {
