@@ -15,33 +15,51 @@ filesyncservice.factory('fileServe',
         var configFile = new Config();
 
         function startMonitors() {
-            if (global.MONITOR_OBJECT.not_active) {
-                global.MONITOR_OBJECT = {};
+            if (global.MONITOR.not_active) {
+                global.MONITOR.not_active = false;
                 var iterationObject = configFile.getConfig('instances');
+                var instancePathArray = [];
                 for (var i = 0; i !== iterationObject.length; i++) {
                     var currentInstance = iterationObject[i];
                     if (currentInstance.read_only.toString() === 'false') {
-                        global.MONITOR_OBJECT[currentInstance.name] = {
+                        instancePathArray.push(currentInstance.path);
+                        //global.MONITOR.watcher = new Monitor(currentInstance.path);
+                        /*global.MONITOR_OBJECT[currentInstance.name] = {
                             monitor: new Monitor(currentInstance.path),
                             path: currentInstance.path
-                        };
+                        };*/
                     }
+                }
+                if(instancePathArray.length !== 0){
+                    global.MONITOR.watcher = new Monitor(instancePathArray);
                 }
             }
         }
 
         function stopMonitors(restart) {
-            if (!global.MONITOR_OBJECT.not_active) {
-                for (var key in global.MONITOR_OBJECT) {
-                    global.MONITOR_OBJECT[key].monitor.closeMonitor();
-                }
-                global.MONITOR_OBJECT = {};
-                global.MONITOR_OBJECT = {
+            if (!global.MONITOR.not_active) {
+                global.MONITOR.watcher.closeMonitor();
+                global.MONITOR = {
                     not_active: true
                 };
                 if (restart) {
                     startMonitors();
                 }
+            }
+        }
+
+        function unwatchFolder( instance, restart ){
+            if(!global.MONITOR.not_active){
+                global.MONITOR.watcher.removePath( instance.path );
+                if(restart){
+                    watchFolder(instance);
+                }
+            }
+        }
+
+        function watchFolder( instance ){
+            if(!global.MONITOR.not_active && instance.read_only.toString() === 'false'){
+                global.MONITOR.watcher.addPath( instance.path );
             }
         }
 
@@ -87,7 +105,7 @@ filesyncservice.factory('fileServe',
                     var url = instance.host + '/' + table.table + '.do';
                     table.response = get(url, queryObject);
                     table.response.success(function(data, status, headers, config){
-                        console.log(data.records);
+                        //console.log(data.records);
                         table.record_ids = data.records;
                         table.record_count = 0;
                     });
@@ -124,7 +142,7 @@ filesyncservice.factory('fileServe',
                                         table.record_count++;
                                     },
                                     function(reponse){
-                                        table.current_file = "ERROR";
+                                        table.current_file = 'ERROR';
                                         table.record_count++;
                                     }
                                 );
@@ -176,7 +194,8 @@ filesyncservice.factory('fileServe',
                     instanceObject._id,
                     callBack
                 );
-                stopMonitors(true);
+                unwatchFolder(instanceObject, true);
+                //stopMonitors(true);
             },
             createTable: function(tableObject, callBack) {
                 configFile.createTable(
@@ -200,9 +219,10 @@ filesyncservice.factory('fileServe',
                     callBack
                 );
             },
-            removeInstanceConfig: function(currentID) {
-                stopMonitors(true);
-                configFile.removeInstance(currentID);
+            removeInstanceConfig: function(instance) {
+                //stopMonitors(true);
+                unwatchFolder(instance);
+                configFile.removeInstance(instance.current_id);
             },
             removeTableConfig: function(currentID) {
                 configFile.removeTables(currentID);
@@ -249,6 +269,14 @@ filesyncservice.factory('fileServe',
             },
             startMonitors: function() {
                 startMonitors();
+            },
+            unwatchFolder: function( instance ){
+                sync_logger.logFailure("Paused watching on " + instance.name);
+                unwatchFolder( instance );
+            },
+            watchFolder: function( instance ){
+                sync_logger.logSuccess("Resumed watching on " + instance.name);
+                watchFolder( instance );
             }
         };
     }

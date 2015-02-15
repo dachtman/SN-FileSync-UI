@@ -3,7 +3,7 @@ var filesyncutilControllers = angular.module('filesyncutilControllers', []);
 filesyncutilControllers.controller('GeneralCtrl', ['$scope', '$window', 'fileServe',
 	function($scope, $window, fileServe) {
 		$scope.console_output = global.CONSOLE_OUTPUT;
-		$scope.watcher = global.MONITOR_OBJECT.not_active || false;
+		$scope.watcher = global.MONITOR.not_active || false;
 		$scope.watcherDisplay = function() {
 			if ($scope.watcher) {
 				return 'Start File Watcher';
@@ -40,7 +40,7 @@ filesyncutilControllers.controller('InstanceCtrl', ['$scope', '$modal', 'fileSer
 			deleteModal.result.then(
 				function(deleteObject) {
 					$scope.instances.splice(deleteObject.current_index, 1);
-					fileServe.removeInstanceConfig(deleteObject.current_id);
+					fileServe.removeInstanceConfig(deleteObject);
 				}
 			);
 		};
@@ -53,6 +53,7 @@ filesyncutilControllers.controller('InstanceCtrl', ['$scope', '$modal', 'fileSer
 				function(instanceObject) {
 					instanceObject.read_only = instanceObject.read_only === 'on' ? 'true' : 'false';
 					fileServe.createInstance(instanceObject, function(err, newInstance) {
+						//console.log(err)
 						$scope.instances.push(fileServe.reformatConfigObject(newInstance));
 						$scope.instances.sort(
 							function(a, b) {
@@ -110,6 +111,7 @@ filesyncutilControllers.controller('InstanceCtrl', ['$scope', '$modal', 'fileSer
 						function() {
 							instance.last_synced = fileServe.formatDateTime(false, 'YYYY-MM-DDTHH:mm:ss');
 							$scope.updateInstance(index, instance, true);
+							//fileServe.watchFolder( instance );
 						}
 					);
 				}
@@ -357,10 +359,10 @@ filesyncutilControllers.controller('SyncInstanceModal', ['$scope', '$modalInstan
 			});
 		};
 		$scope.ok = function(){
-			//fileServe.stopMonitors();
 			var instance = $scope.syncObject.instance;
 			var encodedQuery = $scope.syncObject.encoded_query;
 			var tables = $scope.tables.filter(fileServe.filterSelectedTables);
+			//fileServe.unwatchFolder(instance);
 			$scope.syncObject.tables = fileServe.getKeys(instance,tables,encodedQuery);
 			$modalInstance.close($scope.syncObject);
 		};

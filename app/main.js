@@ -3,7 +3,7 @@ var gui = require('nw.gui');
 var os = require('os');
 var myWindow = gui.Window.get();
 global.CONSOLE_OUTPUT = [];
-global.MONITOR_OBJECT = {
+global.MONITOR = {
     not_active:true
 };
 global.CONFIG_PATH = gui.App.dataPath;
